@@ -1,22 +1,23 @@
 package roughcode.farmersmart
 
-/**
- * Created by Raphael on 12/2/2017.
- */
-
-import java.util.HashMap
-
 import android.content.Context
 import android.graphics.Typeface
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.CheckedTextView
 import android.widget.TextView
-import kotlinx.android.synthetic.main.item_name.*
+import java.util.HashMap
+
+/**
+ * Created by Raphael on 12/2/2017.
+ */
+
 
 class ExpandableListAdapter(private val _context: Context, private val _listDataHeader: List<String> // header titles
-                            , private val _listDataChild: HashMap<String, List<String>>) : BaseExpandableListAdapter() {
+                            ,private val _listDataChild: HashMap<String, List<String>>) : BaseExpandableListAdapter() {
 
     override fun getChild(groupPosition: Int, childPosititon: Int): Any {
         return this._listDataChild[this._listDataHeader[groupPosition]]!![childPosititon]
@@ -28,6 +29,7 @@ class ExpandableListAdapter(private val _context: Context, private val _listData
 
     override fun getChildView(groupPosition: Int, childPosition: Int,
                               isLastChild: Boolean, convertView: View?, parent: ViewGroup): View {
+
         var convertView = convertView
 
         val childText = getChild(groupPosition, childPosition) as String
@@ -35,17 +37,17 @@ class ExpandableListAdapter(private val _context: Context, private val _listData
         if (convertView == null) {
             val infalInflater = this._context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            convertView = infalInflater.inflate(R.layout.item_name, null)
+            convertView = infalInflater.inflate(R.layout.item_details, null)
         }
 
-        val txtListChild = convertView!!.findViewById<View>(R.id.listGroup)!! as TextView
+        val txtListChild = convertView!!.findViewById<View>(R.id.listGroup) as TextView
 
         txtListChild.text = childText
         return convertView
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
-        return this._listDataChild[this._listDataHeader[groupPosition]]!!.size
+        return this._listDataChild[this._listDataHeader[groupPosition]]?.size!!
     }
 
     override fun getGroup(groupPosition: Int): Any {
@@ -70,9 +72,14 @@ class ExpandableListAdapter(private val _context: Context, private val _listData
             convertView = infalInflater.inflate(R.layout.item_name, null)
         }
 
-        val listHeader = convertView?.findViewById<View>(R.id.listHeader) as TextView
-        listHeader.setTypeface(null, Typeface.BOLD)
-        listHeader.text = headerTitle
+        val lblListHeader = convertView!!
+                .findViewById<View>(R.id.lblListHeader) as CheckedTextView
+        lblListHeader.setTypeface(null, Typeface.BOLD)
+        lblListHeader.text = headerTitle
+        lblListHeader.setOnClickListener({ _ ->
+            lblListHeader.isChecked = !lblListHeader.isChecked
+            lblListHeader.setCheckMarkDrawable(if (lblListHeader.isChecked) R.drawable.checked else R.drawable.unchecked)
+        })
 
         return convertView
     }
@@ -84,4 +91,6 @@ class ExpandableListAdapter(private val _context: Context, private val _listData
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean {
         return true
     }
+
 }
+
